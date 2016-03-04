@@ -1,0 +1,28 @@
+{% if person_list %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Teléfono</th>
+                <th>Cumpleaños</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for person in person_list %}
+                <tr>
+                    <td>{{ person.first_name }}</td>
+                    <td>{{ person.last_name }}</td>
+                    <td></td>
+                    <td>{{ person.birthday }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+    
+    </ul>
+{% else %}
+    <p>No hay personas.</p>
+{% endif %}

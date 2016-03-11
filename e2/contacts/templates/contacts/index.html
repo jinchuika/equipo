@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="list-group">
+            {% for contact in contact_list %}
+                <a class="button list-group-item" role="button" data-toggle="collapse" href="#collapse_phones_{{contact.id}}" aria-expanded="false" aria-controls="collapse_phones_{{contact.id}}">{{contact.first_name}} {{contact.last_name}}</a>
+                <div id="collapse_phones_{{contact.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapse_contact_{{contact.id}}" aria-expanded="false" style="height: 0px;">
+                    <div class="list-group">
+                        {% for phone in contact.phone_data %}
+                            {% if phone.empresa == "claro" %}
+                                <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-danger"><b>{{phone.phone_number}}</b></a>
+                            {% elif phone.empresa == "tigo" %}
+                                <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-info"><b>{{phone.phone_number}}</b></a>
+                            {% elif phone.empresa == "movistar" %}
+                                <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-success"><b>{{phone.phone_number}}</b></a>
+                            {% else %}
+                                <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-warning">{{phone.phone_number}}</b></a>
+                            {% endif %}
+                        {% endfor %}
+                        <a data-toggle="modal" href="{% url "create_contact" contact_id=contact.id %}" type="button" class="list-group-item">Editar</b></a>
+                    </div> 
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+            
+{% endblock content %}
+
+{% block javascript %}
+    <script>
+        $('td[data-href]').on("click", function() {
+            console.log('click!');
+            document.location = $(this).data('href');
+        });
+    </script>
+{% endblock javascript %}
+

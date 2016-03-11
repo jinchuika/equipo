@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="post" class="form-set">
+    {% csrf_token %}
+    <table class="table table-striped">
+        <tr>
+            <td>
+                <label for="{{contact_form.first_name.id_for_label}}">Nombre</label>
+            </td>
+            <td>
+                {{ contact_form.first_name }}
+                {% if contact_form.first_name.errors %}
+                    {% for error in contact_form.first_name.errors %}
+                        {{ error|escape }}
+                    {% endfor %}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="{{contact_form.last_name.id_for_label}}">Apellido</label>
+            </td>
+            <td>
+                {{ contact_form.last_name }}
+                {% if contact_form.last_name.errors %}
+                    {% for error in contact_form.last_name.errors %}
+                        {{ error|escape }}
+                    {% endfor %}
+                {% endif %}
+            </td>
+        </tr>
+
+
+        {{ phone_formset.management_form }}
+        
+        {% for phone_form in phone_formset %}
+        <tr class="phone-formset">
+            <td>
+                <label for="{{phone_form.phone_number.id_for_label}}">Teléfono</label>
+            </td>
+            <td>
+                {{ phone_form.phone_number }}
+                {% if phone_form.phone_number.errors %}
+                    {% for error in phone_form.phone_number.errors %}
+                        {{ error|escape }}
+                    {% endfor %}
+                {% endif %}
+            </td>
+            
+        </tr>
+        {% endfor %}
+
+        {% if phone_formset.non_form_errors %}
+            {% for error in phone_formset.non_form_errors %}
+                {{ error|escape }}
+            {% endfor %}
+        {% endif %}
+    </table>
+    <input type="submit" value="Actualizar" class="button"/>
+</form>
+
+<!-- Include formset plugin - including jQuery dependency -->
+<script src="{% static 'js/jquery.formset.js' %}"></script>
+<script>
+    $('.phone-formset').formset({
+        addText: 'agregar',
+        deleteText: 'eliminar'
+    });
+</script>
+{% endblock content %}

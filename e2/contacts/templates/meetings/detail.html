@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row">
+    	<div class="col-md-12">
+    		<h1>Reunión del {{ meeting.date }}</h1>
+    		<h2>Motivo: {{ meeting.purpose }}</h2>
+    		<h3>Participantes:</h3>
+    		<ul>
+    			{% for participant in meeting.participants.all %}
+    				<li><a href="{% url "detail" contact_id=participant.id %}">{{ participant }}</a></li>
+    			{% endfor %}
+    		</ul>
+    		<a href="{% url "meeting_edit" meeting_id=meeting.id %}" class="btn btn-primary">Editar</a>
+    	</div>
+    </div>
+{% endblock content %}	

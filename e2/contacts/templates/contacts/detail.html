@@ -8,6 +8,24 @@
             <li>{{phone.phone_number}}</li>
             {% endfor %}
         </ul>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
+                    <th>Para</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for donation in contact_donations %}
+                <tr>
+                    <td>{{donation.amount}}</td>
+                    <td>{{donation.date}}</td>
+                    <td>{{donation.donation_type}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock content %}

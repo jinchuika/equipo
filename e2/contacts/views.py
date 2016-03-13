@@ -1,12 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.forms.formsets import formset_factory
-from django.shortcuts import redirect, render
-from contacts.forms import PhoneForm, ContactForm, ContactModelForm
-from contacts.models import Phone, Contact
+from contacts.forms import PhoneForm, ContactForm, ContactModelForm, DonationForm, MeetingForm, MeetingEditForm
+from contacts.models import Phone, Contact, Donation, Meeting
+import datetime
 
 def index(request):
 	contact_list = Contact.objects.all().order_by('first_name')
@@ -22,9 +22,11 @@ def index(request):
 def contact_detail(request, contact_id):
 	contact = Contact.objects.get(id=contact_id)
 	contact_phones = Phone.objects.filter(contact=contact)
+	contact_donations = Donation.objects.filter(contact=contact)
 	context = {
 	'contact': contact,
-	'contact_phones': contact_phones
+	'contact_phones': contact_phones,
+	'contact_donations': contact_donations,
 	}
 
 	return render(request, 'contacts/detail.html', context)
@@ -93,3 +95,51 @@ def new_contact(request):
 		form = ContactModelForm()
 
 	return render(request, 'contacts/new.html', {'form': form})
+
+def new_donation(request):
+	if request.method=='POST':
+		donation_form = DonationForm(request.POST)
+		if donation_form.is_valid():
+			donation = donation_form.save(commit=False)
+			donation.save()
+			return redirect(contact_detail, contact_id=donation.contact.id)
+	else:
+		donation_form = DonationForm()
+
+	return render(request, 'donations/new.html', {'donation_form': donation_form})
+
+def new_meeting(request):
+	if request.method=='POST':
+		meeting_form = MeetingForm(request.POST)
+		if meeting_form.is_valid():
+			meeting = meeting_form.save(commit=False)
+			meeting.save()
+			return redirect(index)
+	else:
+		meeting_form = MeetingForm(initial={'date':datetime.date.today})
+
+	return render(request, 'meetings/new.html', {'meeting_form': meeting_form})
+
+def meeting_index(request):
+	meeting_list = Meeting.objects.all().order_by('date')
+	return render(request, 'meetings/index.html', {'meeting_list': meeting_list})
+
+def meeting_detail(request, meeting_id):
+	meeting = Meeting.objects.get(id=meeting_id)
+	return render(request, 'meetings/detail.html', {'meeting': meeting})
+
+def meeting_edit(request, meeting_id):
+	meeting = Meeting.objects.get(id=meeting_id)
+
+	if request.method=='POST':
+		meeting_form = MeetingEditForm(request.POST, meeting=meeting)
+		if meeting_form.is_valid():
+			meeting.date = meeting_form.cleaned_data.get('date')
+			meeting.purpose = meeting_form.cleaned_data.get('purpose')
+			meeting.participants = meeting_form.cleaned_data.get('participants')
+			meeting.save()
+			return redirect(meeting_index)
+	else:
+		meeting_form = MeetingEditForm(meeting=meeting)
+
+	return render(request, 'meetings/edit.html', {'meeting_form': meeting_form})

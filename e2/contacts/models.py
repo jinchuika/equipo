@@ -31,3 +31,37 @@ class Phone(models.Model):
 
 	def __str__(self):
 		return self.phone_number
+
+
+class DonationType(models.Model):
+	"""Type of donation"""
+	donation_type = models.CharField(max_length=50)
+
+	def __str__(self):
+		return self.donation_type
+
+class Donation(models.Model):
+	"""Model for donations and givings"""
+	amount = models.DecimalField(max_digits=10, decimal_places=2)
+	donation_date = models.DateField(null=True, blank=True)
+	contact = models.ForeignKey('Contact', on_delete=models.SET_NULL, null=True, blank=True)
+	donation_type = models.ForeignKey('DonationType', on_delete=models.SET_NULL, null=True, blank=True)
+
+	def __str__(self):
+		return "Q. " + str(self.amount) + " de " + str(self.contact)
+
+class MeetingPurpose(models.Model):
+	"""Model for the type of meetings"""
+	purpose = models.CharField(max_length=50)
+
+	def __str__(self):
+		return self.purpose
+		
+class Meeting(models.Model):
+	"""Model for meetings and gatherings"""
+	date = models.DateField()
+	purpose = models.ForeignKey('MeetingPurpose', on_delete=models.SET_NULL, null=True, blank=True)
+	participants = models.ManyToManyField(Contact, null=True, blank=True)
+
+	def __str__(self):
+		return str(self.date) + " (" + str(self.purpose) + ")"

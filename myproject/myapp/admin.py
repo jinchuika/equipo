@@ -4,4 +4,9 @@ from myapp.models import Person
 from myapp.models import Phone
 # Register your models here.
 
-admin.site.register(Person)
+class PersonAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Person, PersonAdmin)
+admin.site.register(Phone)

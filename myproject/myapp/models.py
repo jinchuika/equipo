@@ -7,6 +7,12 @@ class Person(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     birthday = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+    	return ' '.join([
+    		self.first_name,
+    		self.last_name,
+    		])
     
 class Phone(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)

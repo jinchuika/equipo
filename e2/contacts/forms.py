@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from contacts.models import *
 import datetime
-from functools import partial
+
 
 
 class PhoneForm(forms.Form):

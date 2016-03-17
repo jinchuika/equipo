@@ -11,7 +11,7 @@
                             {% if phone.empresa == "claro" %}
                                 <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-danger"><b>{{phone.phone_number}}</b></a>
                             {% elif phone.empresa == "tigo" %}
-                                <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item active"><b>{{phone.phone_number}}</b></a>
+                                <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-info"><b>{{phone.phone_number}}</b></a>
                             {% elif phone.empresa == "movistar" %}
                                 <a href="tel:{{phone.phone_number}}" type="button" class="list-group-item list-group-item-success"><b>{{phone.phone_number}}</b></a>
                             {% else %}

@@ -1,7 +1,9 @@
 from django import forms
 from django.forms import ModelForm
-from contacts.models import Contact, Donation, Meeting, MeetingPurpose
+from contacts.models import *
 import datetime
+from functools import partial
+
 
 class PhoneForm(forms.Form):
     phone_number = forms.IntegerField()
@@ -28,6 +30,8 @@ class ContactModelForm(ModelForm):
 		}
 
 class DonationForm(ModelForm):
+	account = forms.ModelChoiceField(queryset=Account.objects.all(), empty_label=None, label='Ccuenta')
+	date = forms.DateField(initial=datetime.date.today) 
 	class Meta:
 		model = Donation
 		fields = '__all__'
@@ -35,7 +39,8 @@ class DonationForm(ModelForm):
 		'amount': 'Cantidad',
 		'date': 'Fecha',
 		'contact': 'Persona',
-		'donation_type': 'Donado para'
+		'donation_type': 'Donado para',
+		'account': 'Cuenta'
 		}
 
 class MeetingForm(ModelForm):
@@ -72,3 +77,16 @@ class MeetingEditForm(forms.Form):
 			widget=forms.CheckboxSelectMultiple(),
 			queryset=Contact.objects.all(),
 			label='Asistentes')
+
+class WithdrawalForm(ModelForm):
+	"""Form for creating new Withdrawals"""
+	date = forms.DateField(initial=datetime.date.today, label='Fecha')
+	purpose = forms.ModelChoiceField(queryset=WithdrawalPurpose.objects.all(), label='Para', empty_label=None)
+	account = forms.ModelChoiceField(queryset=Account.objects.all(), label='Cuenta', empty_label=None)
+
+	class Meta:
+		model = Withdrawal
+		fields = '__all__'
+		labels = {
+		'amount': 'Cantidad'
+		}

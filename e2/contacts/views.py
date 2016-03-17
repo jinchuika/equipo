@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.forms.formsets import formset_factory
-from contacts.forms import PhoneForm, ContactForm, ContactModelForm, DonationForm, MeetingForm, MeetingEditForm
-from contacts.models import Phone, Contact, Donation, Meeting
+from contacts.forms import *
+from contacts.models import *
 import datetime
+from operator import attrgetter, methodcaller
 
 def index(request):
 	contact_list = Contact.objects.all().order_by('first_name')
@@ -143,3 +144,27 @@ def meeting_edit(request, meeting_id):
 		meeting_form = MeetingEditForm(meeting=meeting)
 
 	return render(request, 'meetings/edit.html', {'meeting_form': meeting_form})
+
+def new_withdrawal(request):
+	if request.method=='POST':
+		withdrawal_form = WithdrawalForm(request.POST)
+		if withdrawal_form.is_valid():
+			withdrawal = withdrawal_form.save(commit=False)
+			withdrawal.save()
+			return redirect(index)
+	else:
+		withdrawal_form = WithdrawalForm()
+
+	return render(request, 'withdrawals/new.html', {'form': withdrawal_form})
+
+def money_index(request):
+	movement_list = []
+	donation_list = Donation.objects.all()
+	withdrawal_list = Withdrawal.objects.all()
+	for donation in donation_list:
+		movement_list.append({'amount':donation.amount, 'date': donation.donation_date, 'type': 'donation'})
+
+	for withdrawal in withdrawal_list:
+		movement_list.append({'amount':withdrawal.amount, 'date': withdrawal.date, 'type': 'withdrawal'})
+
+	return render(request, 'money/index.html', {'movement_list': sorted(movement_list, key=lambda k: k['date'])})

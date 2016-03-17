@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+import datetime
 
 class Contact(models.Model):
 	first_name = models.CharField(max_length=100)
@@ -46,9 +49,15 @@ class Donation(models.Model):
 	donation_date = models.DateField(null=True, blank=True)
 	contact = models.ForeignKey('Contact', on_delete=models.SET_NULL, null=True, blank=True)
 	donation_type = models.ForeignKey('DonationType', on_delete=models.SET_NULL, null=True, blank=True)
+	account = models.ForeignKey('Account', on_delete=models.CASCADE, null=True)
 
 	def __str__(self):
 		return "Q. " + str(self.amount) + " de " + str(self.contact)
+
+@receiver(post_save, sender=Donation, dispatch_uid="update_accout_credit")
+def update_credit_donation(sender, instance, **kwargs):
+	instance.account.credit += instance.amount
+	instance.account.save()
 
 class MeetingPurpose(models.Model):
 	"""Model for the type of meetings"""
@@ -61,7 +70,51 @@ class Meeting(models.Model):
 	"""Model for meetings and gatherings"""
 	date = models.DateField()
 	purpose = models.ForeignKey('MeetingPurpose', on_delete=models.SET_NULL, null=True, blank=True)
-	participants = models.ManyToManyField(Contact, null=True, blank=True)
+	participants = models.ManyToManyField(Contact, blank=True)
 
 	def __str__(self):
 		return str(self.date) + " (" + str(self.purpose) + ")"
+
+class Account(models.Model):
+	"""Model for the money accounts"""
+	name = models.CharField(max_length=50)
+	description = models.CharField(max_length=150)
+	credit = models.DecimalField(max_digits=10, decimal_places=2)
+
+	
+	def sum_total_transfers(self, end_date=datetime.date.today().strftime('%Y-%m-%d')):
+		result = 0
+		result += sum(x.amount for x in Donation.objects.filter(account=self, donation_date__lte=end_date))
+		result -= sum(x.amount for x in Withdrawal.objects.filter(account=self, date__lte=end_date))
+		return result
+
+	def get_balance(self, start_date=None, end_date=None):
+		result = 0
+		result += self.sum_total_transfers(start_date)
+		result += sum(x.amount for x in Donation.objects.filter(account=self, donation_date__range=(start_date, end_date)))
+		result -= sum(x.amount for x in Withdrawal.objects.filter(account=self, date__range=(start_date, end_date)))
+		#str(self.get_balance(start_date='2016-03-01', end_date='2016-03-31'))
+		return result
+
+	def __str__(self):
+		return self.name + " (Q."+ str(self.credit)+")" 
+
+class Withdrawal(models.Model):
+	amount = models.DecimalField(max_digits=10, decimal_places=2)
+	date = models.DateField(null=True, blank=True)
+	purpose = models.ForeignKey('WithdrawalPurpose', on_delete=models.PROTECT)
+	account = models.ForeignKey('Account', on_delete=models.CASCADE, null=True)
+
+	def __str__(self):
+		return "Q." + str(self.amount) + " para " + self.purpose.name
+
+@receiver(post_save, sender=Withdrawal, dispatch_uid="update_accout_debit")
+def update_credit_withdrawal(sender, instance, **kwargs):
+	instance.account.credit -= instance.amount
+	instance.account.save()
+
+class WithdrawalPurpose(models.Model):
+	name = models.CharField(max_length=25)
+
+	def __str__(self):
+		return self.name

@@ -6,10 +6,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>Equipo</title>
 	<link rel="stylesheet" href="{% static 'css/bootstrap.css'%}">
-	<link rel="stylesheet" href="{% static 'css/cosmo.min.css'%}">
+	<link rel="stylesheet" href="{% static 'css/flatly.min.css'%}">
 	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css'%}">
-	<script src="{% static 'js/jquery.min.js' %}"></script>
-	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css'%}">
+	<link rel="stylesheet" href="{% static 'css/jquery-ui.structure.min.css'%}">
+	
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -27,8 +28,21 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li><a href="{% url "new_contact" %}">Agregar</a></li>
-					<li><a href="{% url "new_donation" %}">Finanzas</a></li>
-					<li><a href="{% url "meeting_index" %}">Reunión</a></li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Finanzas <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="{% url "new_donation" %}">Ofrenda</a></li>
+							<li><a href="{% url "new_withdrawal" %}">Gasto</a></li>
+							<li><a href="{% url "money_index" %}">Informes</a></li>
+						</ul>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Reunión <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="{% url "meeting_index" %}">Todas</a></li>
+							<li><a href="{% url "new_meeting" %}">Nueva</a></li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -38,6 +52,9 @@
 		{% endblock content %}
 	</div>
 </body>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
 {% block javascript %}
     
 {% endblock javascript %}

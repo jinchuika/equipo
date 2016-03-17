@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^(?P<contact_id>[0-9]+)/edit', views.create_contact, name='create_contact'),
     url(r'^new', views.new_contact, name='new_contact'),
     url(r'^donate', views.new_donation, name='new_donation'),
+    url(r'^debit', views.new_withdrawal, name='new_withdrawal'),
+    url(r'^money', views.money_index, name='money_index'),
 
     url(r'^r$', views.meeting_index, name='meeting_index'),
     url(r'^r/new', views.new_meeting, name='new_meeting'),
